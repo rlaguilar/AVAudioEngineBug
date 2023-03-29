@@ -10,6 +10,9 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view.
 
         try! engine.enableManualRenderingMode(.offline, format: format, maximumFrameCount: 1024)
+
+        // uncommenting the next line makes the crash go away
+//        engine.applyDirtyHackBeforeStartingEngine()
         try! engine.start()
 
         let player = AVAudioPlayerNode()
@@ -31,5 +34,13 @@ class ViewController: UIViewController {
         engine.attach(varispeed)
         engine.connect(player, to: varispeed, format: format)
         engine.connect(varispeed, to: engine.mainMixerNode, format: format)
+    }
+}
+
+private extension AVAudioEngine {
+    func applyDirtyHackBeforeStartingEngine() {
+        let dummyPlayer = AVAudioPlayerNode()
+        attach(dummyPlayer)
+        connect(dummyPlayer, to: mainMixerNode, format: manualRenderingFormat)
     }
 }
